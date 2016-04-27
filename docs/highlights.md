@@ -10,15 +10,16 @@ Set of k8s resources to deploy a 3 node Cassandra 3.0.5 cluster on K8s 1.2.2.
 * Should enforce system requirements (amount of nodes, CPU, RAM, etc).
 * Should be checked (all nodes can communicate to each other).
 * Should have an "success" event, detect if it has finished successfully.
+* Should use host networking stack due to performance penalties with other networking providers.
 
 ## Monitoring
 
 * All layers of infrastructure should have monitoring.
-* Monitoring should be integrated woth infrastructure software primitives (like readiness checks).
+* Monitoring should be integrated with infrastructure software primitives (like readiness checks).
 
 ## Logging
 
-* Logs should be accesible using standard `kubectl` commands.
+* Logs should be accessible using standard `kubectl` commands.
 
 ## Dependencies
 
@@ -31,7 +32,7 @@ Set of k8s resources to deploy a 3 node Cassandra 3.0.5 cluster on K8s 1.2.2.
 * Architecture, for more detailed view.
 * Bright future plans: implementing cluster expansion/upgrade/reconfiguration.
 
-All docs should be filled with command examples, outputs examples and diagrams.
+All docs should be filled with command examples, output examples and diagrams.
 
 ## Functional testing
 

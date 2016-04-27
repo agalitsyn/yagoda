@@ -3,6 +3,8 @@
 ## Kubernetes
 
 * [Running Kubernetes Locally via Docker](http://kubernetes.io/docs/getting-started-guides/docker/)
+* [Running Kubernetes on Bare-metal with PXE](http://kubernetes.io/docs/getting-started-guides/coreos/bare_metal_offline/)
+* [Weave is kinda slow](http://www.generictestdomain.net/docker/weave/networking/stupidity/2015/04/05/weave-is-kinda-slow/)
 
 ## Cassandra
 
@@ -15,7 +17,6 @@
 ## Both
 
 * [Cassandra using Kubernetes](https://github.com/kubernetes/kubernetes/blob/release-1.2/examples/cassandra/README.md)
-
 
 ## OSX-specific
 
