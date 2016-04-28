@@ -5,6 +5,7 @@
 * [Running Kubernetes Locally via Docker](http://kubernetes.io/docs/getting-started-guides/docker/)
 * [Running Kubernetes on Bare-metal with PXE](http://kubernetes.io/docs/getting-started-guides/coreos/bare_metal_offline/)
 * [Weave is kinda slow](http://www.generictestdomain.net/docker/weave/networking/stupidity/2015/04/05/weave-is-kinda-slow/)
+* [Kubernetes on Vagrant (multi-machine)](https://coreos.com/kubernetes/docs/latest/kubernetes-on-vagrant.html)
 
 ### Walkthrough
 
