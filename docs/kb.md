@@ -6,6 +6,11 @@
 * [Running Kubernetes on Bare-metal with PXE](http://kubernetes.io/docs/getting-started-guides/coreos/bare_metal_offline/)
 * [Weave is kinda slow](http://www.generictestdomain.net/docker/weave/networking/stupidity/2015/04/05/weave-is-kinda-slow/)
 
+### Walkthrough
+
+* [k8s 101](http://kubernetes.io/docs/user-guide/walkthrough/)
+* [k8s 201](http://kubernetes.io/docs/user-guide/walkthrough/k8s201/)
+
 ## Cassandra
 
 * [A Brief Introduction to Apache Cassandra](https://academy.datastax.com/resources/brief-introduction-apache-cassandra)
