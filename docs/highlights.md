@@ -24,7 +24,7 @@ Set of k8s resources to deploy a 3 node Cassandra 3.0.5 cluster on K8s 1.2.2.
 ## Dependencies
 
 * No specific dependencies, only `kubectl` and `ssh`.
-* Keep it simple, use only k8s jobs and daemon sets.
+* Keep it simple, use only k8s resouces.
 
 ## Documentation
 
