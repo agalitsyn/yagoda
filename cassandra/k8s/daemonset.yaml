@@ -35,8 +35,10 @@ spec:
           ports:
             - containerPort: 9042
               name: cql
-            - containerPort: 9160
-              name: thrift
+            - containerPort: 7000
+              name: intra-node
+            - containerPort: 7001
+              name: tls-intra-node
           resources:
             request:
               cpu: 0.1
