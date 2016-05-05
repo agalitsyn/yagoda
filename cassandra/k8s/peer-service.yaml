@@ -9,8 +9,8 @@ spec:
   clusterIP: None
   ports:
     - port: 7000
-      name: intra-node-communication
+      name: intra-node
     - port: 7001
-      name: tls-intra-node-communication
+      name: tls-intra
   selector:
     name: cassandra
