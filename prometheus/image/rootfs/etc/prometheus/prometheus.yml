@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+rule_files:
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    target_groups:
+      - targets: ['localhost:9090']
+  - job_name: 'k8s'
+    scrape_interval: 5s
+    dns_sd_configs:
+      - type: A
+        port: 9100
+        names:
+          - prometheus-nodes
+
