@@ -10,7 +10,9 @@ metadata:
 spec:
   selector:
     k8s-app: kube-registry
+  type: LoadBalancer
   ports:
   - name: registry
     port: 5000
+    nodePort: 30100
     protocol: TCP
