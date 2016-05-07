@@ -1,0 +1,15 @@
+language: python
+
+python:
+  - "3.5"
+
+install:
+  - "pip install tox"
+
+script:
+  - tox -e lint
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
