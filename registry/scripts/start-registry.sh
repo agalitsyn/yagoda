@@ -2,6 +2,7 @@
 
 SCRIPT_DIR="$(dirname "$0")"
 
+kubectl create -f $SCRIPT_DIR/../k8s/namespace.yaml
 kubectl create -f $SCRIPT_DIR/../k8s/service.yaml
 kubectl create -f $SCRIPT_DIR/../k8s/replication-controller.yaml
 
@@ -19,5 +20,4 @@ while true; do
     sleep 1
 done
 
-kubectl port-forward $POD 5000:5000 2>&1 | logger &
-
+kubectl port-forward --namespace=kube-system $POD 5000:5000 2>&1 | logger &
