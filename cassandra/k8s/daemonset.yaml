@@ -13,7 +13,7 @@ spec:
       nodeSelector:
         name: cassandra
       containers:
-        - image: cassandra:3.5
+        - image: localhost:5000/yagoda-cassandra
           name: cassandra
           env:
             - name: MAX_HEAP_SIZE
@@ -45,6 +45,21 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/cassandra/data
               name: data
+          readinessProbe:
+            exec:
+              command:
+                - cqlsh
+                - --execute
+                - "HELP"
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - "/opt/yagoda/bin/cassandra-check"
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+      restartPolicy: Always
       volumes:
         - name: data
           emptyDir: {}

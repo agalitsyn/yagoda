@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+STATUS_OK=0
+STATUS_WARNING=1
+STATUS_CRITICAL=2
+STATUS_UNKNOWN=3
+
+
+function exit_with_status() {
+	local usage="exit_with_status <message> <status_code $STATUS_OK|$STATUS_WARNING|$STATUS_CRITICAL|$STATUS_UNKNOWN>"
+	local msg=${1:?$usage}
+	local status_code=${2:?$usage}
+
+	if [[ $status_code == $STATUS_OK ]]; then
+		echo "OK. $msg"
+	elif [[ $status_code == $STATUS_WARNING ]]; then
+		echo "WARNING. $msg"
+	elif [[ $status_code == $STATUS_CRITICAL ]]; then
+		echo "CRITICAL. $msg" >&2
+	else
+		echo "UNKNOWN. $msg" >&2
+	fi
+
+	exit $status_code
+}
+
+
+function check_cassandra_is_ready() {
+	local host_ip=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+	if [[ -z $host_ip ]]; then
+		exit_with_status "Can't get node ip address." "$STATUS_UNKNOWN"
+	fi
+
+	local status=$(nodetool status | grep $host_ip | awk '{print $1}')
+	if [[ -z $status ]]; then
+		exit_with_status "Can't get Cassandra status" "$STATUS_UNKNOWN"
+	fi
+
+	if [[ $status == "UN" ]]; then
+		exit_with_status "Cassandra is in the up and normal state." "$STATUS_OK"
+	fi
+
+	exit_with_status "Cassandra is not in normal state. Current state is $STATUS" "$STATUS_CRITICAL"
+}
+
+
+check_cassandra_is_ready
