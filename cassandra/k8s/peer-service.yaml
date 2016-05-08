@@ -12,5 +12,7 @@ spec:
       name: intra-node
     - port: 7001
       name: tls-intra
+    - port: 9101
+      name: jmx-exporter
   selector:
     name: cassandra
