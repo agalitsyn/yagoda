@@ -1,6 +1,4 @@
-IMAGE := yagoda-cassandra:latest
-REGISTRY := localhost:5000
-
+include vars.mk
 
 build:
 	docker build --pull --rm -t $(IMAGE) .
