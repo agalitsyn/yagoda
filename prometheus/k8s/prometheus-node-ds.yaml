@@ -14,8 +14,9 @@ spec:
         - name: prometheus-node-exporter
           image: prom/node-exporter:latest
           ports:
-            - containerPort: 9100
-              name: prom-exporter
+            - name: prom-exporter
+              containerPort: 9100
+              protocol: TCP
           resources:
             requests:
               cpu: 0.1

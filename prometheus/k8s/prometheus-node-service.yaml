@@ -5,9 +5,10 @@ metadata:
     name: prometheus-nodes
   name: prometheus-nodes
 spec:
-  clusterIP: None
-  ports:
-    - port: 9100
-      name: prom-exporter
   selector:
     name: prometheus-node
+  clusterIP: None
+  ports:
+    - name: prom-exporter
+      port: 9100
+      protocol: TCP
