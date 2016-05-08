@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    name: prometheus-node
+  name: prometheus-node
+spec:
+  template:
+    metadata:
+      labels:
+        name: prometheus-node
+    spec:
+      containers:
+        - name: prometheus-node-exporter
+          image: prom/node-exporter:latest
+          ports:
+            - containerPort: 9100
+              name: prom-exporter
+          resources:
+            requests:
+              cpu: 0.1
+      restartPolicy: Always
+      volumes:
+        - name: data
+          emptyDir: {}
+      hostNetwork: true

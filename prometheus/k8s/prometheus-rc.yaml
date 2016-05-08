@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: prometheus
+    version: v1
+  name: prometheus
+spec:
+  replicas: 1
+  selector:
+    name: prometheus
+    version: v1
+  template:
+    metadata:
+      labels:
+        name: prometheus
+        version: v1
+    spec:
+      containers:
+      - name: prometheus
+        image: localhost:30100/yagoda-prometheus:latest
+        imagePullPolicy: Always
+        ports:
+        - name: prometheus-api
+          containerPort: 9090
+          protocol: TCP
+
