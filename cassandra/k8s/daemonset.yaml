@@ -13,7 +13,18 @@ spec:
       nodeSelector:
         name: cassandra
       containers:
-        - image: localhost:5000/yagoda-cassandra
+        - image: localhost:30100/yagoda-jmx-exporter
+          name: jmx-exporter
+          env:
+            - name: JMX_EXPORTER_PORT
+              value: 9101
+          ports:
+            - containerPort: 9101
+              name: jmx-exporter
+          resources:
+            request:
+              cpu: 0.1
+        - image: localhost:30100/yagoda-cassandra
           name: cassandra
           env:
             - name: MAX_HEAP_SIZE
