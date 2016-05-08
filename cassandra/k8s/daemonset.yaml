@@ -74,3 +74,4 @@ spec:
       volumes:
         - name: data
           emptyDir: {}
+      hostNetwork: true
