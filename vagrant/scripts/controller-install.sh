@@ -5,7 +5,7 @@ set -e
 export ETCD_ENDPOINTS=
 
 # Specify the version (vX.Y.Z) of Kubernetes assets to deploy
-export K8S_VER=v1.2.2_coreos.0
+export K8S_VER=v1.2.2
 
 # The CIDR network to use for pod IPs.
 # Each pod launched in the cluster will be assigned an IP out of this range.
@@ -83,15 +83,33 @@ function init_templates {
 [Service]
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
-Environment=KUBELET_VERSION=${K8S_VER}
-ExecStart=/usr/lib/coreos/kubelet-wrapper \
-  --api-servers=http://127.0.0.1:8080 \
-  --register-schedulable=false \
-  --allow-privileged=true \
-  --config=/etc/kubernetes/manifests \
-  --hostname-override=${ADVERTISE_IP} \
-  --cluster_dns=${DNS_SERVICE_IP} \
-  --cluster_domain=cluster.local
+
+ExecStart=/usr/bin/docker run \
+    --volume=/:/rootfs:ro \
+    --volume=/sys:/sys:ro \
+    --volume=/var/lib/docker/:/var/lib/docker:rw \
+    --volume=/var/lib/kubelet/:/var/lib/kubelet:rw \
+    --volume=/var/run:/var/run:rw \
+    --volume=/etc/kubernetes:/etc/kubernetes:rw \
+    --volume=/usr/share/ca-certificates:/etc/ssl/certs:rw \
+    --volume=/usr/lib/os-release:/etc/os-release:rw \
+    --volume=/run:/run:rw \
+    --net=host \
+    --pid=host \
+    --privileged=true \
+    --name=kubelet \
+    gcr.io/google_containers/hyperkube-amd64:${K8S_VER} \
+    /hyperkube kubelet \
+        --containerized \
+        --register-schedulable=true \
+        --address="0.0.0.0" \
+        --api-servers=http://localhost:8080 \
+        --config=/etc/kubernetes/manifests \
+        --hostname-override=${ADVERTISE_IP} \
+        --cluster_dns=${DNS_SERVICE_IP} \
+        --cluster_domain=cluster.local \
+        --allow-privileged=true --v=2
+
 Restart=always
 RestartSec=10
 
@@ -114,7 +132,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-proxy
-    image: quay.io/coreos/hyperkube:$K8S_VER
+    image: gcr.io/google_containers/hyperkube-amd64:$K8S_VER
     command:
     - /hyperkube
     - proxy
@@ -147,7 +165,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-apiserver
-    image: quay.io/coreos/hyperkube:$K8S_VER
+    image: gcr.io/google_containers/hyperkube-amd64:$K8S_VER
     command:
     - /hyperkube
     - apiserver
@@ -200,7 +218,7 @@ metadata:
 spec:
   containers:
   - name: kube-controller-manager
-    image: quay.io/coreos/hyperkube:$K8S_VER
+    image: gcr.io/google_containers/hyperkube-amd64:$K8S_VER
     command:
     - /hyperkube
     - controller-manager
@@ -247,7 +265,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-scheduler
-    image: quay.io/coreos/hyperkube:$K8S_VER
+    image: gcr.io/google_containers/hyperkube-amd64:$K8S_VER
     command:
     - /hyperkube
     - scheduler

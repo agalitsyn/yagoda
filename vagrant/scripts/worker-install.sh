@@ -9,8 +9,11 @@ export ETCD_ENDPOINTS=
 # However, it is also possible to point directly to a single control node.
 export CONTROLLER_ENDPOINT=
 
+# Specify image of Kubernetes assets to deploy
+export K8S_IMAGE=172.17.4.1:5000/hyperkube
+
 # Specify the version (vX.Y.Z) of Kubernetes assets to deploy
-export K8S_VER=v1.2.2_coreos.0
+export K8S_VER=v1.2.2
 
 # The IP address of the cluster DNS service.
 # This must be the same DNS_SERVICE_IP used when configuring the controller nodes.
@@ -49,18 +52,36 @@ function init_templates {
 [Service]
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
-Environment=KUBELET_VERSION=${K8S_VER}
-ExecStart=/usr/lib/coreos/kubelet-wrapper \
-  --api-servers=${CONTROLLER_ENDPOINT} \
-  --register-node=true \
-  --allow-privileged=true \
-  --config=/etc/kubernetes/manifests \
-  --hostname-override=${ADVERTISE_IP} \
-  --cluster_dns=${DNS_SERVICE_IP} \
-  --cluster_domain=cluster.local \
-  --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
-  --tls-cert-file=/etc/kubernetes/ssl/worker.pem \
-  --tls-private-key-file=/etc/kubernetes/ssl/worker-key.pem
+ExecStart=/usr/bin/docker run \
+    --volume=/:/rootfs:ro \
+    --volume=/sys:/sys:ro \
+    --volume=/var/lib/docker/:/var/lib/docker:rw \
+    --volume=/var/lib/kubelet/:/var/lib/kubelet:rw \
+    --volume=/var/run:/var/run:rw \
+    --volume=/etc/kubernetes:/etc/kubernetes:rw \
+    --volume=/usr/share/ca-certificates:/etc/ssl/certs:rw \
+    --volume=/usr/lib/os-release:/etc/os-release:rw \
+    --volume=/run:/run:rw \
+    --net=host \
+    --pid=host \
+    --privileged=true \
+    --name=kubelet \
+    gcr.io/google_containers/hyperkube-amd64:${K8S_VER} \
+    /hyperkube kubelet \
+       --containerized \
+       --api-servers=${CONTROLLER_ENDPOINT} \
+       --register-node=true \
+       --register-schedulable=true \
+       --allow-privileged=true \
+       --config=/etc/kubernetes/manifests \
+       --hostname-override=${ADVERTISE_IP} \
+       --cluster_dns=${DNS_SERVICE_IP} \
+       --address="0.0.0.0" \
+       --cluster_domain=cluster.local \
+       --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
+       --tls-cert-file=/etc/kubernetes/ssl/worker.pem \
+       --tls-private-key-file=/etc/kubernetes/ssl/worker-key.pem \
+       --v=2
 Restart=always
 RestartSec=10
 
@@ -108,7 +129,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-proxy
-    image: quay.io/coreos/hyperkube:$K8S_VER
+    image: gcr.io/google_containers/hyperkube-amd64:$K8S_VER
     command:
     - /hyperkube
     - proxy
