@@ -1,0 +1,22 @@
+#!/usr/bin/env make -f
+
+.PHONY: start stop restart
+
+build:
+	for d in $(shell find ./ -maxdepth 1 -name 'image-*' -type d); do \
+		$(MAKE) -C $$d build ; \
+	done
+
+push:
+	for d in $(shell find ./ -maxdepth 1 -name 'image-*' -type d); do \
+		$(MAKE) -C $$d push ; \
+	done
+
+start: build push
+	kubectl create -f k8s/
+
+stop:
+	@-kubectl delete -f k8s/
+
+restart: stop start
+

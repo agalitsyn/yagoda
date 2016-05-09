@@ -12,8 +12,8 @@ scrape_configs:
   - job_name: 'k8s'
     scrape_interval: 5s
     dns_sd_configs:
-      - type: A
-        port: 9100
+      - type: SRV
         names:
-          - prometheus-nodes
+          - _prom-exporter._tcp.prometheus-nodes
+          - _jmx-exporter._tcp.cassandra-peers
 
