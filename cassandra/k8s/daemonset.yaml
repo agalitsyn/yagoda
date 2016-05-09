@@ -17,7 +17,7 @@ spec:
           name: jmx-exporter
           env:
             - name: JMX_EXPORTER_PORT
-              value: 9101
+              value: "9101"
           ports:
             - containerPort: 9101
               name: jmx-exporter
