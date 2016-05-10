@@ -13,7 +13,14 @@ scrape_configs:
     scrape_interval: 5s
     dns_sd_configs:
       - type: SRV
+        refresh_interval: 5s
         names:
           - _prom-exporter._tcp.prometheus-nodes
+  - job_name: 'cassandra'
+    scrape_interval: 30s
+    dns_sd_configs:
+      - type: SRV
+        refresh_interval: 5s
+        names:
           - _jmx-exporter._tcp.cassandra-peers
 
