@@ -34,7 +34,7 @@ class CassandraResourceFactory(object):
         self.api = api
         self.resource_map = resource_map
 
-    def factory(self):
+    def get_resources(self):
         resources = []
         for entity, def_file_path in self.resource_map:
             data = unserialize_from_yaml_file(os.path.join(PROJECT_ROOT,
@@ -48,7 +48,7 @@ class CassandraResourceController(object):
         self.pool = pool
 
     def create(self):
-        for entity in self.pool.factory():
+        for entity in self.pool.get_resources():
             try:
                 entity.create()
                 LOG.info('Created "{}".'.format(entity.kind))
@@ -56,7 +56,7 @@ class CassandraResourceController(object):
                 LOG.error(e)
 
     def update(self):
-        for entity in self.pool.factory():
+        for entity in self.pool.get_resources():
             try:
                 entity.update()
                 LOG.info('Updated "{}".'.format(entity.kind))
@@ -64,7 +64,7 @@ class CassandraResourceController(object):
                 LOG.error(e)
 
     def delete(self):
-        for entity in self.pool.factory():
+        for entity in self.pool.get_resources():
             try:
                 entity.delete()
                 LOG.info('Deleted "{}".'.format(entity.kind))
@@ -72,7 +72,7 @@ class CassandraResourceController(object):
                 LOG.error(e)
 
     def validate(self):
-        for entity in self.pool.factory():
+        for entity in self.pool.get_resources():
             try:
                 entity.validate()
             except (KubernetesError, ObjectDoesNotExist) as e:
