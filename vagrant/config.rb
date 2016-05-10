@@ -1,11 +1,10 @@
-$update_channel="alpha"
+$update_channel="stable"
 
 $controller_count=1
 $controller_vm_memory=1024
+$controller_vcpus=2
 
 $worker_count=2
 $worker_vm_memory=1024
-
-$etcd_count=1
-$etcd_vm_memory=256
+$worker_vcpus=2
 

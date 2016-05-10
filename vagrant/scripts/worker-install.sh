@@ -9,11 +9,8 @@ export ETCD_ENDPOINTS=
 # However, it is also possible to point directly to a single control node.
 export CONTROLLER_ENDPOINT=
 
-# Specify image of Kubernetes assets to deploy
-export K8S_IMAGE=172.17.4.1:5000/hyperkube
-
 # Specify the version (vX.Y.Z) of Kubernetes assets to deploy
-export K8S_VER=v1.2.2
+export K8S_VER=v1.2.3
 
 # The IP address of the cluster DNS service.
 # This must be the same DNS_SERVICE_IP used when configuring the controller nodes.
