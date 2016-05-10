@@ -22,7 +22,7 @@ spec:
             - containerPort: 9101
               name: jmx-exporter
           resources:
-            request:
+            requests:
               cpu: 0.1
         - image: localhost:30100/yagoda-cassandra
           name: cassandra
@@ -51,7 +51,7 @@ spec:
             - containerPort: 7001
               name: tls-intra-node
           resources:
-            request:
+            requests:
               cpu: 0.1
           volumeMounts:
             - mountPath: /var/lib/cassandra/data
