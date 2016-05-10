@@ -4,6 +4,9 @@ set -e
 # List of etcd servers (http://ip:port), comma separated
 export ETCD_ENDPOINTS=
 
+# Specify the version (X.Y.Z) of Etcd image to deploy
+export ETCD_VERSION=2.2.5
+
 # Specify the version (vX.Y.Z) of Kubernetes assets to deploy
 export K8S_VER=v1.2.3
 
@@ -75,6 +78,40 @@ function init_flannel {
 }
 
 function init_templates {
+    local TEMPLATE=/etc/systemd/system/etcd2.service
+    [ -f $TEMPLATE ] || {
+        echo "TEMPLATE: $TEMPLATE"
+        mkdir -p $(dirname $TEMPLATE)
+        cat << EOF > $TEMPLATE
+[Unit]
+Requires=early-docker.service
+After=early-docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+ExecStart=/usr/bin/docker -H unix:///var/run/early-docker.sock run \
+    -v /usr/share/ca-certificates/:/etc/ssl/certs \
+    --net host \
+    --name etcd \
+    gcr.io/google_containers/etcd-amd64:${ETCD_VERSION} \
+      /usr/local/bin/etcd \
+      -name etcd0 \
+      -advertise-client-urls http://\${COREOS_PUBLIC_IPV4}:2379,http://\${COREOS_PUBLIC_IPV4}:4001 \
+      -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 \
+      -initial-advertise-peer-urls http://\${COREOS_PRIVATE_IPV4}:2380 \
+      -listen-peer-urls http://0.0.0.0:2380 \
+      -initial-cluster-token etcd-cluster-1 \
+      -initial-cluster etcd0=http://\${COREOS_PRIVATE_IPV4}:2380 \
+      -initial-cluster-state new
+
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    }
+
     local TEMPLATE=/etc/systemd/system/kubelet.service
     [ -f $TEMPLATE ] || {
         echo "TEMPLATE: $TEMPLATE"
@@ -557,11 +594,15 @@ function start_addons {
 init_config
 init_templates
 
-init_flannel
-
 systemctl stop update-engine; systemctl mask update-engine
+systemctl stop locksmithd; systemctl mask locksmithd
 
 systemctl daemon-reload
+systemctl enable early-docker; systemctl start early-docker
+systemctl enable etcd2; systemctl start etcd2
+
+init_flannel
+
 systemctl enable kubelet; systemctl start kubelet
 start_addons
 echo "DONE"
