@@ -11,8 +11,10 @@ Vagrant.require_version ">= 1.6.0"
 $update_channel = "alpha"
 $controller_count = 1
 $controller_vm_memory = 512
+$controller_vcpus = 1
 $worker_count = 1
 $worker_vm_memory = 1024
+$worker_vcpus = 1
 
 CONFIG = File.expand_path("config.rb")
 if File.exist?(CONFIG)
@@ -104,11 +106,13 @@ Vagrant.configure("2") do |config|
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
         controller.vm.provider vmware do |v|
           v.vmx['memsize'] = $controller_vm_memory
+          v.vmx['numvcpus'] = $controller_vcpus
         end
       end
 
       controller.vm.provider :virtualbox do |vb|
         vb.memory = $controller_vm_memory
+        vb.cpus = $controller_vcpus
       end
 
       controllerIP = controllerIP(i)
@@ -137,11 +141,13 @@ Vagrant.configure("2") do |config|
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
         worker.vm.provider vmware do |v|
           v.vmx['memsize'] = $worker_vm_memory
+          v.vmx['numvcpus'] = $worker_vcpus
         end
       end
 
       worker.vm.provider :virtualbox do |vb|
         vb.memory = $worker_vm_memory
+        vb.cpus = $worker_vcpus
       end
 
       workerIP = workerIP(i)
