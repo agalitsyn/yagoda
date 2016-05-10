@@ -24,7 +24,7 @@ LOG = logging.getLogger('{}:{}'.format(__file__, __name__))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
-def serialize_from_yaml_file(path):
+def unserialize_from_yaml_file(path):
     with open(path, 'r') as stream:
         return yaml.load(stream)
 
@@ -37,8 +37,8 @@ class CassandraResourceFactory(object):
     def factory(self):
         resources = []
         for entity, def_file_path in self.resource_map:
-            data = serialize_from_yaml_file(os.path.join(PROJECT_ROOT,
-                                                         def_file_path))
+            data = unserialize_from_yaml_file(os.path.join(PROJECT_ROOT,
+                                                           def_file_path))
             resources.append(entity(self.api, data))
         return resources
 
