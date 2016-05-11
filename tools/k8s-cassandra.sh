@@ -7,7 +7,7 @@ function action_cqlsh() {
 
 
 function action_status() {
-	local cluster_status=$(kubectl exec $FIRST_RUNNING_SEED \
+	local cluster_status=$(kubectl exec "$FIRST_RUNNING_SEED" \
 		-c cassandra \
 		-- nodetool status -r)
 
@@ -16,8 +16,8 @@ function action_status() {
 	echo "  -------      --------------"
 
 	while read -r line; do
-		node_name=$(echo $line | awk '{print $1}')
-		status=$(echo "$cluster_status" | grep $node_name | awk '{print $1}')
+		node_name=$(echo "$line" | awk '{print $1}')
+		status=$(echo "$cluster_status" | grep "$node_name" | awk '{print $1}')
 
 		long_status=$(echo "$status" | \
 			sed 's/U/  Up/g' | \
