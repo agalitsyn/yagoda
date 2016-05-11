@@ -1,4 +1,5 @@
 include vars.mk
+include ../../Makefile.docker
 
 build:
 	if [ ! -f rootfs/opt/prometheus/jmx_prometheus_httpserver.jar ]; then \
@@ -9,10 +10,3 @@ build:
 				&& cp jmx_prometheus_httpserver/target/jmx_prometheus_httpserver-*-jar-with-dependencies.jar /build/jmx_prometheus_httpserver.jar' ; \
 	fi
 	docker build --pull --rm -t $(IMAGE) .
-
-clean:
-	docker rmi -f $$(docker images -q $(IMAGE))
-
-push:
-	docker tag $(IMAGE) $(REGISTRY)/$(IMAGE)
-	docker push $(REGISTRY)/$(IMAGE)

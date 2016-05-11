@@ -1,0 +1,18 @@
+
+ifndef IMAGE
+$(error IMAGE not specified, did you forget to include some vars.mk?)
+endif
+
+ifndef REGISTRY
+$(error REGISTRY not specified, did you forget to include some vars.mk?)
+endif
+
+build:
+	docker build --pull --rm -t "$(IMAGE)" .
+
+clean:
+	docker rmi -f "$$(docker images -q $(IMAGE))"
+
+push:
+	docker tag "$(IMAGE)" "$(REGISTRY)/$(IMAGE)"
+	docker push "$(REGISTRY)/$(IMAGE)"
