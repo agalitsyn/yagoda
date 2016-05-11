@@ -4,6 +4,7 @@
 require 'fileutils'
 require 'open-uri'
 require 'tempfile'
+require 'base64'
 require 'yaml'
 
 Vagrant.require_version ">= 1.6.0"
@@ -27,6 +28,7 @@ end
 
 CONTROLLER_CLUSTER_IP="10.3.0.1"
 
+KUBECONFIG_PATH = File.expand_path("kubeconfig.tpl")
 CONTROLLER_CLOUD_CONFIG_PATH = File.expand_path("scripts/controller-install.sh")
 WORKER_CLOUD_CONFIG_PATH = File.expand_path("scripts/worker-install.sh")
 
@@ -47,6 +49,15 @@ system("mkdir -p ssl && bash scripts/init-ssl-ca ssl") or abort ("failed generat
 
 # Generate admin key/cert
 system("bash scripts/init-ssl ssl admin kube-admin") or abort("failed generating admin SSL artifacts")
+
+# Generate kubeconfig
+data = YAML.load(IO.readlines(KUBECONFIG_PATH).join)
+data["clusters"][0]["cluster"]["certificate-authority"] = File.expand_path("ssl/ca.pem")
+data["users"][0]["user"]["client-certificate"] = File.expand_path("ssl/admin.pem")
+data["users"][0]["user"]["client-key"] = File.expand_path("ssl/admin-key.pem")
+kubeconfig_file = File.new(File.expand_path("kubeconfig"), "w")
+kubeconfig_file.write("#{data.to_yaml}")
+kubeconfig_file.close
 
 def provisionMachineSSL(machine,certBaseName,cn,ipAddrs)
   tarFile = "ssl/#{cn}.tar"
