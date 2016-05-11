@@ -17,8 +17,8 @@ function vagrant_up() {
 function wait_for_k8s() {
 	announce-step "Waiting for K8S"
 
-	local cluster_status="$SCRIPT_DIR/../vagrant/scripts/cluster_status.sh"
-	wait-for-command "bash $cluster_status" 5 30
+	local cmd="bash $SCRIPT_DIR/../vagrant/scripts/cluster_status.sh"
+	wait-for-command "$cmd" 5 30
 }
 
 function k8s_cluster_check() {
@@ -26,13 +26,13 @@ function k8s_cluster_check() {
 
 	kubectl run nginx-test --image=nginx --port=80
 
-	# Waiting for pods
-	local cmd="kubectl get pods -l run=nginx-test | grep ^nginx-test"
-	wait-for-command $cmd
+	# Wait pod to appear
+	local cmd='kubectl get pods -l run=nginx-test | grep ^nginx-test'
+	wait-for-command "$cmd" 5 30
 
 	# Determine pod to expose
-	local pod=$(kubectl get pods -l run=nginx-test \
-		-o jsonpath='{ .items[0].metadata.name }')
+	local pod=$(kubectl get pods -l run=nginx-test --no-headers \
+		| awk '{ print $1 }')
 	kubectl expose pod $pod --target-port=80 \
 		--name=nginx-test --type=LoadBalancer
 
@@ -41,6 +41,13 @@ function k8s_cluster_check() {
 
 	kubectl delete service nginx-test
 	kubectl delete deployment nginx-test
+}
+
+function k8s_wait_for_workers() {
+	announce-step "Waiting for 3 worker nodes"
+
+	local cmd='[ $(kubectl get nodes --no-headers | wc -l) -eq 3 ]'
+	wait-for-command "$cmd" 5 30
 }
 
 function deploy_registry() {
@@ -72,6 +79,7 @@ function main() {
 	wait_for_k8s
 	eval $(bash "$SCRIPT_DIR/../vagrant/scripts/cluster_use.sh")
 	k8s_cluster_check
+	k8s_wait_for_workers
 	announce-step "Setting labels on nodes"
 	kubectl label node --all name=cassandra
 	deploy_registry

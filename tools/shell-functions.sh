@@ -20,7 +20,7 @@ function wait-for-command() {
 	local attempts=${3:-10}
 
 	attempt=1
-	until $cmd >/dev/null 2>&1; do
+	until eval $cmd >/dev/null 2>&1; do
 		echo "Failed. Attempt $attempt of $attempts."
 
 		if [[ $attempt -eq $attempts ]]; then

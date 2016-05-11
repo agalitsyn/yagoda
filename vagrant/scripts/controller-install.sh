@@ -78,6 +78,21 @@ function init_flannel {
 }
 
 function init_templates {
+    local TEMPLATE=/etc/hosts
+    [ -f $TEMPLATE ] || {
+        echo "TEMPLATE: $TEMPLATE"
+        mkdir -p $(dirname $TEMPLATE)
+        cat << EOF > $TEMPLATE
+127.0.0.1 localhost
+$ADVERTISE_IP $(hostname)
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+EOF
+    }
+
     local TEMPLATE=/etc/systemd/system/etcd2.service
     [ -f $TEMPLATE ] || {
         echo "TEMPLATE: $TEMPLATE"
