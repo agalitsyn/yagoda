@@ -26,7 +26,7 @@ function exit_with_status() {
 
 
 function check_cassandra_is_ready() {
-	local host_ip=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+	local host_ip=$(hostname --ip-address)
 	if [[ -z $host_ip ]]; then
 		exit_with_status "Can't get node ip address." "$STATUS_UNKNOWN"
 	fi
