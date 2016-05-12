@@ -19,6 +19,12 @@ Differences from k8s team [example](https://github.com/kubernetes/kubernetes/blo
 * Docker (as newer as possible)
 * Kubectl
 
+For good performance, better to have hardware like:
+* 8 GB of RAM
+* 4 cores CPU
+* 80 GB free on disk
+* SSD
+
 ## Installation
 
 ### Python 3.5
@@ -145,6 +151,14 @@ Cassandra covered by:
 Useful command:
 ```
 $ kubectl describe pods cassandra
+```
+
+Output:
+```
+Ready:              True
+Restart Count:      0
+Liveness:           exec [/opt/yagoda/bin/cassandra-check] delay=30s timeout=5s period=10s #success=1 #failure=3
+Readiness:          exec [cqlsh --execute HELP] delay=30s timeout=5s period=10s #success=1 #failure=3
 ```
 
 ## Development
