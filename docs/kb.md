@@ -35,8 +35,3 @@
 ## Both
 
 * [Cassandra using Kubernetes](https://github.com/kubernetes/kubernetes/blob/release-1.2/examples/cassandra/README.md)
-
-## OSX-specific
-
-* [Docker-machine on OSX](https://docs.docker.com/engine/installation/mac/#from-your-shell)
-
