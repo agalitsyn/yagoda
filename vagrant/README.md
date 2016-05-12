@@ -18,5 +18,5 @@ mv kubectl /usr/local/bin/kubectl
 ```
 
 * View cluster status: `scripts/cluster_status.sh`.
-* Use this cluster as default for local kubectl: `eval $(bash scripts/cluster_use.sh)`.
+* Use this cluster as default for local kubectl: `export KUBECONFIG=$(realpath kubeconfig); kubectl config use-context vagrant-multi`.
 

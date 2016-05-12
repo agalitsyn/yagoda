@@ -4,12 +4,12 @@
 
 build:
 	for d in $(shell find ./ -maxdepth 1 -name 'image-*' -type d); do \
-		$(MAKE) -C $$d build ; \
+		$(MAKE) -C "$$d" build ; \
 	done
 
 push:
 	for d in $(shell find ./ -maxdepth 1 -name 'image-*' -type d); do \
-		$(MAKE) -C $$d push ; \
+		$(MAKE) -C "$$d" push ; \
 	done
 
 start: build push

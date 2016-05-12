@@ -31,15 +31,15 @@ EOT
 
 function create-docker-machine() {
 	docker-machine create --driver virtualbox --engine-insecure-registry "$K8S_DOCKER_HOST:$K8S_DOCKER_REGISTRY_PORT" "$K8S_DOCKER_MACHINE_NAME"
-	docker-machine ssh $K8S_DOCKER_MACHINE_NAME \
+	docker-machine ssh "$K8S_DOCKER_MACHINE_NAME" \
 		"mkdir -pv ~/bin &&
 		wget http://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl -O ~/bin/kubectl &&
 		chmod 0755 ~/bin/kubectl &&
 		echo 'export PATH=\$PATH:~/bin' >> ~/.ashrc
 		echo 'export KUBECONFIG=~/kubeconfig' >> ~/.ashrc"
 
-	docker-machine scp $KUBECONFIG $K8S_DOCKER_MACHINE_NAME:~/kubeconfig
-    docker-machine env $K8S_DOCKER_MACHINE_NAME
+	docker-machine scp "$KUBECONFIG" "$K8S_DOCKER_MACHINE_NAME:~/kubeconfig"
+    docker-machine env "$K8S_DOCKER_MACHINE_NAME"
 }
 
 
@@ -57,7 +57,8 @@ EOF
 
 function forward-k8s-api-port() {
 	echo "==> Forward $K8S_API_PORT"
-	docker-machine ssh $K8S_DOCKER_MACHINE_NAME -N -L $K8S_API_PORT:$K8S_DOCKER_HOST:$K8S_API_PORT 2>&1
+	docker-machine ssh "$K8S_DOCKER_MACHINE_NAME" -N \
+		-L "$K8S_API_PORT:$K8S_DOCKER_HOST:$K8S_API_PORT" 2>&1
 }
 
 
@@ -77,7 +78,7 @@ function forward-k8s-docker-registry() {
 	done
 
 	echo '==> Forward 5000 port'
-	kubectl port-forward --namespace=kube-system $POD 5000:5000 2>&1
+	kubectl port-forward --namespace=kube-system "$POD" 5000:5000 2>&1
 }
 
 
@@ -93,12 +94,12 @@ function run-k8s-docker() {
 		--privileged=true \
 		--name=kubelet \
 		-d \
-		gcr.io/google_containers/hyperkube-amd64:${K8S_VERSION} \
+		"gcr.io/google_containers/hyperkube-amd64:${K8S_VERSION}" \
 		/hyperkube kubelet \
 			--containerized \
 			--hostname-override="127.0.0.1" \
 			--address="0.0.0.0" \
-			--api-servers=http://$K8S_DOCKER_HOST:$K8S_API_PORT \
+			--api-servers="http://$K8S_DOCKER_HOST:$K8S_API_PORT" \
 			--config=/etc/kubernetes/manifests \
 			--cluster-dns=10.0.0.10 \
 			--cluster-domain=cluster.local \
@@ -120,8 +121,8 @@ function remove-k8s-docker() {
 
 	docker rm $(docker ps --filter=name=k8s --filter=name=kube --quiet --all)
 
-	docker-machine ssh $K8S_DOCKER_MACHINE_NAME 'sudo umount $(cat /proc/mounts | grep /var/lib/kubelet | awk '{print $2}''
-	docker-machine ssh $K8S_DOCKER_MACHINE_NAME 'sudo rm -rf /var/lib/kubelet'
+	docker-machine ssh "$K8S_DOCKER_MACHINE_NAME" 'sudo umount $(cat /proc/mounts | grep /var/lib/kubelet | awk '{print $2}''
+	docker-machine ssh "$K8S_DOCKER_MACHINE_NAME" 'sudo rm -rf /var/lib/kubelet'
 }
 
 

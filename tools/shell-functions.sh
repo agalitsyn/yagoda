@@ -20,14 +20,14 @@ function wait-for-command() {
 	local attempts=${3:-10}
 
 	attempt=1
-	until eval $cmd >/dev/null 2>&1; do
+	until eval "$cmd" >/dev/null 2>&1; do
 		echo "Failed. Attempt $attempt of $attempts."
 
-		if [[ $attempt -eq $attempts ]]; then
+		if [[ "$attempt" -eq "$attempts" ]]; then
 			die "all attempts were failed"
 		fi
 
-		sleep $poll_interval
+		sleep "$poll_interval"
 		((attempt++))
 	done
 }
@@ -39,8 +39,8 @@ function wait-for-http() {
 	local attempts=${3:-10}
 
 	wait-for-command \
-		"curl --output /dev/null --silent --head --fail --max-time 1 $endpoint" \
-		$poll_interval $attempts
+		"curl --output /dev/null --silent --head --fail --max-time 1 '$endpoint'" \
+		"$poll_interval" "$attempts"
 }
 
 function k8s-service-endpoint() {
@@ -52,7 +52,7 @@ function k8s-service-endpoint() {
 	local any_host=$(kubectl get nodes \
 		-o jsonpath='{ .items[0].status.addresses[?(@.type == "InternalIP")].address }')
 	local service_port=$(kubectl $namespace get service \
-		-o jsonpath="{ .spec.ports[?(@.port == $containerport)].nodePort }" $service)
+		-o jsonpath="{ .spec.ports[?(@.port == $containerport)].nodePort }" "$service")
 
 	echo "${any_host}:${service_port}"
 }
